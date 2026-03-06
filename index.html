@@ -425,18 +425,22 @@
                     <label
                         style="display: block; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; font-size: 1.2rem;">Objetivo
                         do Jogo:</label>
-                    <textarea class="form-control"
+                    <textarea id="briefing-objetivo" class="form-control"
                         style="width: 100%; box-sizing: border-box; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--line-color); padding: 1rem; border-radius: 8px; font-size: 1.1rem; resize: vertical;"
                         rows="3">Curtir, pensar, aprender.</textarea>
+                    <button class="filter-btn" style="margin-top: 10px; font-size: 1rem; padding: 5px 15px;"
+                        onclick="saveBriefing('objetivo', this)">Salvar Objetivo</button>
                 </div>
 
                 <div>
                     <label
                         style="display: block; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; font-size: 1.2rem;">Foco
                         Técnico para este jogo:</label>
-                    <textarea class="form-control"
+                    <textarea id="briefing-foco" class="form-control"
                         style="width: 100%; box-sizing: border-box; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--line-color); padding: 1rem; border-radius: 8px; font-size: 1.1rem; resize: vertical;"
                         rows="3">Domínio de bola, marcação sempre lateral.</textarea>
+                    <button class="filter-btn" style="margin-top: 10px; font-size: 1rem; padding: 5px 15px;"
+                        onclick="saveBriefing('foco', this)">Salvar Foco Técnico</button>
                 </div>
             </div>
         </div>
@@ -870,6 +874,33 @@
         // Initialize drag board
         selectNode.addEventListener('change', (e) => loadDraggableFormation(e.target.value));
         loadDraggableFormation(selectNode.value);
+
+        // --- Briefing Logic ---
+        function saveBriefing(type, btn) {
+            const val = document.getElementById(`briefing-${type}`).value;
+            localStorage.setItem(`football_tactics_${type}`, val);
+
+            const oldText = btn.innerText;
+            btn.innerText = 'Salvo com sucesso!';
+            btn.style.backgroundColor = '#4caf50';
+            btn.style.borderColor = '#4caf50';
+            btn.style.color = '#fff';
+
+            setTimeout(() => {
+                btn.innerText = oldText;
+                btn.style.backgroundColor = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            }, 2000);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedObj = localStorage.getItem('football_tactics_objetivo');
+            if (savedObj) document.getElementById('briefing-objetivo').value = savedObj;
+
+            const savedFoco = localStorage.getItem('football_tactics_foco');
+            if (savedFoco) document.getElementById('briefing-foco').value = savedFoco;
+        });
 
     </script>
 </body>
