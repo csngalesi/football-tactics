@@ -303,6 +303,18 @@
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
         }
 
+        .tools-sidebar.fullscreen {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            z-index: 10000;
+            /* Above the fullscreen pitch */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            background: rgba(45, 45, 45, 0.95);
+        }
+
         /* --- FERRAMENTAS PRANCHETA LIVRE --- */
         .board-layout {
             display: flex;
@@ -1054,14 +1066,17 @@
         function toggleFullscreen() {
             isFullscreen = !isFullscreen;
             const pitch = document.getElementById('drag-pitch');
+            const sidebar = document.querySelector('.tools-sidebar');
             const icon = document.querySelector('#tool-fullscreen i');
 
             if (isFullscreen) {
                 pitch.classList.add('fullscreen');
+                sidebar.classList.add('fullscreen');
                 icon.classList.remove('fa-expand');
                 icon.classList.add('fa-compress');
             } else {
                 pitch.classList.remove('fullscreen');
+                sidebar.classList.remove('fullscreen');
                 icon.classList.remove('fa-compress');
                 icon.classList.add('fa-expand');
             }
@@ -1274,12 +1289,30 @@
             loadDraggableFormation(selectNode.value);
             // Clear local storage
             localStorage.removeItem('football_tactics_drawing');
+            localStorage.removeItem('football_tactics_players');
         }
 
         function saveDrawing() {
+            // Save Canvas Map
             const dataUrl = canvas.toDataURL();
             localStorage.setItem('football_tactics_drawing', dataUrl);
-            alert('Desenhos da prancheta salvos com sucesso!');
+
+            // Save Position of specific layer players
+            const players = [];
+            document.querySelectorAll('#drag-players-layer .player').forEach(el => {
+                players.push({
+                    className: el.className,
+                    innerText: el.innerText,
+                    title: el.title || '',
+                    bottom: el.style.bottom,
+                    left: el.style.left,
+                    top: el.style.top,
+                    zIndex: el.style.zIndex
+                });
+            });
+            localStorage.setItem('football_tactics_players', JSON.stringify(players));
+
+            alert('Tática e Jogadores salvos com sucesso na Prancheta Livre!');
         }
 
         // Add the save binding globally so the HTML onclick can find it
@@ -1302,6 +1335,37 @@
                     }, 150);
                 };
                 img.src = savedDrawing;
+            }
+
+            // Restore Player Positions (if they exist) over the default layout
+            const savedPlayersJson = localStorage.getItem('football_tactics_players');
+            if (savedPlayersJson) {
+                try {
+                    const savedPlayers = JSON.parse(savedPlayersJson);
+                    const playersLayer = document.getElementById('drag-players-layer');
+                    playersLayer.innerHTML = ''; // strip default
+
+                    savedPlayers.forEach(pData => {
+                        const el = document.createElement('div');
+                        el.className = pData.className;
+                        el.innerText = pData.innerText;
+                        el.title = pData.title;
+                        el.style.bottom = pData.bottom;
+                        el.style.left = pData.left;
+                        el.style.top = pData.top;
+                        el.style.zIndex = pData.zIndex;
+                        el.style.position = 'absolute';
+                        el.style.transform = 'translate(-50%, -50%)';
+
+                        playersLayer.appendChild(el);
+                        // We must rebind events natively using makeDraggable
+                        if (typeof makeDraggable === 'function') {
+                            makeDraggable(el);
+                        }
+                    });
+                } catch (e) {
+                    console.error('Failed to restore tactical player states:', e);
+                }
             }
         });
 
