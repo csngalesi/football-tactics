@@ -265,6 +265,79 @@
             z-index: 100 !important;
         }
 
+        /* --- FERRAMENTAS PRANCHETA LIVRE --- */
+        .board-layout {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .board-main {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .tools-sidebar {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+            background: var(--surface);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--line-color);
+            margin-bottom: 1rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: 2px solid transparent;
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tool-btn.active {
+            color: var(--primary);
+            border-color: var(--primary);
+            background: rgba(0, 164, 228, 0.1);
+        }
+
+        .tool-btn.action {
+            color: #ccc;
+        }
+
+        .tool-btn.action:hover {
+            color: white;
+            border-color: #aaa;
+        }
+
+        /* Canvas overlay */
+        #drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            /* Above pitch lines, below players (when dragging), or above (when drawing) depending on JS */
+            pointer-events: none;
+            /* By default, let clicks pass through to players */
+        }
+
 
         /* Goleiro Oponente Generico */
         .player.opp {
@@ -674,44 +747,67 @@
     </div>
 
     <!-- TACTIC 5: FREE DRAG & DROP BOARD -->
-    <div id="sys-drag" class="tactic-view">
-        <div class="pitch-container" id="drag-pitch">
-            <div class="pitch-lines">
-                <div class="area top">
-                    <div class="pequena-area"></div>
-                    <div class="meia-lua"></div>
+    <div id="sys-drag" class="tactic-view" style="display: block; grid-template-columns: 1fr;">
+
+        <div class="board-layout">
+            <div class="board-main">
+                <div class="tools-sidebar">
+                    <button class="tool-btn active" id="tool-drag" title="Arrastar Jogadores"
+                        onclick="setBoardMode('drag')"><i class="fa-solid fa-hand"></i></button>
+                    <button class="tool-btn" id="tool-draw" title="Modo Rabisco" onclick="setBoardMode('draw')"><i
+                            class="fa-solid fa-pen"></i></button>
+                    <div style="width: 2px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
+                    <button class="tool-btn action" title="Limpar Rabiscos" onclick="clearCanvas()"><i
+                            class="fa-solid fa-eraser"></i></button>
+                    <button class="tool-btn action" title="Salvar Imagem"
+                        onclick="alert('Feature Placeholder: Salvar Imagem')"><i
+                            class="fa-solid fa-floppy-disk"></i></button>
                 </div>
-                <div class="area bottom">
-                    <div class="pequena-area"></div>
-                    <div class="meia-lua"></div>
+
+                <div class="pitch-container" id="drag-pitch">
+                    <div class="pitch-lines">
+                        <div class="area top">
+                            <div class="pequena-area"></div>
+                            <div class="meia-lua"></div>
+                        </div>
+                        <div class="area bottom">
+                            <div class="pequena-area"></div>
+                            <div class="meia-lua"></div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas para rabiscos -->
+                    <canvas id="drawing-canvas"></canvas>
+
+                    <!-- Players will be injected here by JS -->
+                    <div id="drag-players-layer"
+                        style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 60;"></div>
                 </div>
             </div>
 
-            <!-- Players will be injected here by JS -->
-            <div id="drag-players-layer"></div>
-        </div>
+            <div class="info-panel" style="min-width: 300px; flex: 1;">
+                <h2>Prancheta Dinâmica Interativa</h2>
+                <p>Arraste os jogadores pelo campo ou habilite o lápis para desenhar as marcações.</p>
 
-        <div class="info-panel">
-            <h2>Prancheta Dinâmica Interativa</h2>
-            <p>Arraste os jogadores pelo campo para simular movimentações, saída de bola e marcação sob pressão.</p>
+                <div style="margin-top: 2rem;">
+                    <label
+                        style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: var(--primary);">Formação
+                        Base:</label>
+                    <select id="formation-select"
+                        style="width: 100%; padding: 0.8rem; background: var(--surface); color: white; border: 1px solid var(--primary); border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                        <option value="342">Sistema 3-4-2 (Recomendado)</option>
+                        <option value="432">Sistema 4-3-2</option>
+                        <option value="3231-narrow" selected>Sistema 3-2-3-1 (Foco Central)</option>
+                        <option value="3231">Sistema 3-2-3-1 (Guardiola)</option>
+                    </select>
+                </div>
 
-            <div style="margin-top: 2rem;">
-                <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: var(--primary);">Formação
-                    Base:</label>
-                <select id="formation-select"
-                    style="width: 100%; padding: 0.8rem; background: var(--surface); color: white; border: 1px solid var(--primary); border-radius: 8px; font-size: 1rem; cursor: pointer;">
-                    <option value="342">Sistema 3-4-2 (Recomendado)</option>
-                    <option value="432">Sistema 4-3-2</option>
-                    <option value="3231-narrow" selected>Sistema 3-2-3-1 (Foco Central)</option>
-                    <option value="3231">Sistema 3-2-3-1 (Guardiola)</option>
-                </select>
-            </div>
-
-            <div
-                style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--accent);">
-                <p style="font-size: 0.85rem; margin: 0; color: #ccc;"><i>Dica: Escolha a formação inicial acima. Em
-                        seguida clique e arraste as peças no campinho (touch ou mouse) para explicar deslocamentos
-                        táticos.</i></p>
+                <div
+                    style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--accent);">
+                    <p style="font-size: 0.85rem; margin: 0; color: #ccc;"><i>Dicas:<br>- Mãozinha: Arrasta
+                            jogadores.<br>- Lápis: Desenha setas/linhas.<br>- Trocar de formação recria as posições.</i>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -894,12 +990,136 @@
             }, 2000);
         }
 
+        // --- Drawing Logic ---
+        const canvas = document.getElementById('drawing-canvas');
+        const ctx = canvas.getContext('2d');
+        const pitchContainer = document.getElementById('drag-pitch');
+        let boardMode = 'drag'; // 'drag' or 'draw'
+        let isDrawing = false;
+
+        // Match canvas internal resolution to display size
+        function resizeCanvas() {
+            const rect = pitchContainer.getBoundingClientRect();
+            // Salvar desenho atual antes de redimensionar
+            const tempCanvas = document.createElement('canvas');
+            const tCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            if (canvas.width > 0 && canvas.height > 0) tCtx.drawImage(canvas, 0, 0);
+
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            ctx.strokeStyle = '#fbc02d'; // Yellow tactical lines
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Restaurar desenho
+            if (tempCanvas.width > 0) ctx.drawImage(tempCanvas, 0, 0, tempCanvas.width, tempCanvas.height, 0, 0, canvas.width, canvas.height);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        // Call it immediately but wait for layout calculations
+        setTimeout(resizeCanvas, 100);
+
+        function setBoardMode(mode) {
+            boardMode = mode;
+            document.getElementById('tool-drag').classList.remove('active');
+            document.getElementById('tool-draw').classList.remove('active');
+            document.getElementById(`tool-${mode}`).classList.add('active');
+
+            if (mode === 'draw') {
+                canvas.style.pointerEvents = 'auto';
+                canvas.style.zIndex = '70'; // Place canvas above players so we can draw over them
+                document.getElementById('drag-players-layer').style.pointerEvents = 'none'; // Distrai clicks dos players
+            } else {
+                canvas.style.pointerEvents = 'none';
+                canvas.style.zIndex = '50'; // Place canvas below players so we can click them
+                document.getElementById('drag-players-layer').style.pointerEvents = 'auto';
+            }
+        }
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+
+            return {
+                x: clientX - rect.left,
+                y: clientY - rect.top
+            };
+        }
+
+        function startDrawing(e) {
+            if (boardMode !== 'draw') return;
+            e.preventDefault();
+            isDrawing = true;
+            const pos = getMousePos(e);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+        }
+
+        function draw(e) {
+            if (!isDrawing || boardMode !== 'draw') return;
+            e.preventDefault();
+            const pos = getMousePos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+        }
+
+        function stopDrawing(e) {
+            if (!isDrawing) return;
+            isDrawing = false;
+        }
+
+        // Mouse Events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Touch Events
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
+        canvas.addEventListener('touchend', stopDrawing);
+        canvas.addEventListener('touchcancel', stopDrawing);
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function saveDrawing() {
+            const dataUrl = canvas.toDataURL();
+            localStorage.setItem('football_tactics_drawing', dataUrl);
+            alert('Desenhos da prancheta salvos com sucesso!');
+        }
+
+        // Add the save binding globally so the HTML onclick can find it
+        window.saveDrawing = saveDrawing;
+
         window.addEventListener('DOMContentLoaded', () => {
             const savedObj = localStorage.getItem('football_tactics_objetivo');
             if (savedObj) document.getElementById('briefing-objetivo').value = savedObj;
 
             const savedFoco = localStorage.getItem('football_tactics_foco');
             if (savedFoco) document.getElementById('briefing-foco').value = savedFoco;
+
+            // Restore Drawing
+            const savedDrawing = localStorage.getItem('football_tactics_drawing');
+            if (savedDrawing) {
+                const img = new Image();
+                img.onload = () => {
+                    setTimeout(() => {
+                        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+                    }, 150);
+                };
+                img.src = savedDrawing;
+            }
         });
 
     </script>
