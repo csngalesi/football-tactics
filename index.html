@@ -137,7 +137,6 @@
             max-width: 500px;
             margin: 0 auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
         }
 
         /* Linhas do Campo */
@@ -264,6 +263,24 @@
             transform: translate(-50%, -50%) scale(1.2);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
             z-index: 100 !important;
+        }
+
+        .player.placeholder {
+            background-color: transparent !important;
+            border: 2px dashed rgba(255, 255, 255, 0.6) !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            box-shadow: none !important;
+            z-index: 5 !important;
+        }
+
+        .player.roster {
+            background-color: var(--accent) !important;
+            color: #111 !important;
+            border-color: #111 !important;
+            font-size: 0.75rem !important;
+            width: 32px !important;
+            height: 32px !important;
+            z-index: 20 !important;
         }
 
         /* --- FERRAMENTAS PRANCHETA LIVRE --- */
@@ -757,10 +774,12 @@
                 <div class="tools-sidebar">
                     <button class="tool-btn active" id="tool-drag" title="Arrastar Jogadores"
                         onclick="setBoardMode('drag')"><i class="fa-solid fa-hand"></i></button>
+                    <button class="tool-btn" id="tool-roster" title="Modo Elenco (Nomear posições)"
+                        onclick="toggleRosterMode()"><i class="fa-solid fa-users"></i></button>
                     <button class="tool-btn" id="tool-draw" title="Modo Rabisco" onclick="setBoardMode('draw')"><i
                             class="fa-solid fa-pen"></i></button>
                     <div style="width: 2px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
-                    <button class="tool-btn action" title="Limpar Rabiscos" onclick="clearCanvas()"><i
+                    <button class="tool-btn action" title="Limpar Rabiscos e Posições" onclick="clearCanvas()"><i
                             class="fa-solid fa-eraser"></i></button>
                     <button class="tool-btn action" title="Salvar Imagem" onclick="saveDrawing()"><i
                             class="fa-solid fa-floppy-disk"></i></button>
@@ -804,11 +823,21 @@
                     </select>
                 </div>
 
+                <!-- BENCH CONTAINER FOR ROSTER MODE -->
+                <div id="bench-container"
+                    style="display: none; margin-top: 1.5rem; padding: 1rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--primary);">
+                    <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-main);">Elenco
+                        (Arraste para o campo)</h3>
+                    <div id="bench-zone"
+                        style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; min-height: 40px;">
+                        <!-- Roster players injected here by JS -->
+                    </div>
+                </div>
+
                 <div
                     style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--accent);">
                     <p style="font-size: 0.85rem; margin: 0; color: #ccc;"><i>Dicas:<br>- Mãozinha: Arrasta
-                            jogadores.<br>- Lápis: Desenha setas/linhas.<br>- Trocar de formação recria as posições.</i>
-                    </p>
+                            jogadores.<br>- Lápis: Desenha setas/linhas.<br>- Bonecos: Modo Elenco Nominal.</i></p>
                 </div>
             </div>
         </div>
@@ -898,24 +927,79 @@
         const playersLayer = document.getElementById('drag-players-layer');
         const selectNode = document.getElementById('formation-select');
 
+        // --- Roster Logic ---
+        let isRosterMode = false;
+
+        const rosterList = [
+            { name: 'Felipinho', label: 'FEL' },
+            { name: 'José Bento', label: 'JB' },
+            { name: 'Deco', label: 'DEC' },
+            { name: 'Toti', label: 'TOT' },
+            { name: 'Pedro Goes', label: 'PG' },
+            { name: 'Tata', label: 'TAT' },
+            { name: 'Rafa Sanches', label: 'RSA' },
+            { name: 'Rafa Peduti', label: 'RPE' },
+            { name: 'Felipe Teixeira', label: 'FT' },
+            { name: 'Bruno Galesi', label: 'BG' },
+            { name: 'Gustavo Geromel', label: 'GG' },
+            { name: 'Max Miranda', label: 'MAX' },
+            { name: 'Rafael Brandão', label: 'RB' }
+        ];
+
+        function toggleRosterMode() {
+            isRosterMode = !isRosterMode;
+            const btn = document.getElementById('tool-roster');
+            const bench = document.getElementById('bench-container');
+
+            if (isRosterMode) {
+                btn.classList.add('active');
+                bench.style.display = 'block';
+            } else {
+                btn.classList.remove('active');
+                bench.style.display = 'none';
+            }
+            // Reloads formation destroying all dragged roster pieces and cleanly resetting placeholders
+            loadDraggableFormation(selectNode.value);
+        }
+
         function loadDraggableFormation(formationKey) {
             playersLayer.innerHTML = ''; // clear
+            const benchZone = document.getElementById('bench-zone');
+            if (benchZone) benchZone.innerHTML = '';
+
             const players = formations[formationKey];
 
             players.forEach(p => {
                 const el = document.createElement('div');
-                el.className = 'player draggable';
-                el.innerText = p.label;
+                el.className = 'player draggable' + (isRosterMode ? ' placeholder' : '');
+                el.innerText = isRosterMode ? '' : p.label;
                 el.style.bottom = p.bottom;
+                el.style.top = 'auto'; // ensure reset from previous drags
                 el.style.left = p.left;
 
                 // Keep track of z-index
                 el.style.zIndex = Math.floor(Math.random() * 10) + 10;
 
                 playersLayer.appendChild(el);
-
                 makeDraggable(el);
             });
+
+            if (isRosterMode && benchZone) {
+                rosterList.forEach(rp => {
+                    const el = document.createElement('div');
+                    el.className = 'player draggable roster';
+                    el.innerText = rp.label;
+                    el.title = rp.name;
+                    el.style.position = 'relative';
+                    el.style.transform = 'none';
+                    el.style.left = 'auto';
+                    el.style.bottom = 'auto';
+                    el.style.top = 'auto';
+
+                    benchZone.appendChild(el);
+                    makeDraggable(el);
+                });
+            }
         }
 
         function makeDraggable(el) {
@@ -932,9 +1016,31 @@
             document.addEventListener('mouseup', dragEnd);
 
             function dragStart(e) {
+                if (boardMode === 'draw') return;
                 if (e.target !== el) return;
                 isDragging = true;
                 el.classList.add('dragging');
+
+                // If element is dragged from the bench, move it to the pitch layer seamlessly!
+                if (el.parentElement !== playersLayer) {
+                    const rect = el.getBoundingClientRect();
+                    const pitchRect = pitchNode.getBoundingClientRect();
+
+                    // Coordinates of center element relative to screen
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    const pctX = ((centerX - pitchRect.left) / pitchRect.width) * 100;
+                    const pctY = ((centerY - pitchRect.top) / pitchRect.height) * 100;
+
+                    el.style.position = 'absolute';
+                    el.style.transform = 'translate(-50%, -50%)';
+                    el.style.left = pctX + '%';
+                    el.style.top = pctY + '%';
+                    el.style.bottom = 'auto';
+
+                    playersLayer.appendChild(el);
+                }
             }
 
             function drag(e) {
@@ -955,16 +1061,14 @@
                 let x = clientX - rect.left;
                 let y = clientY - rect.top;
 
-                // constrain to pitch bounds
-                x = Math.max(0, Math.min(x, rect.width));
-                y = Math.max(0, Math.min(y, rect.height));
-
+                // removed boundaries constraint to allow dragging inside AND outside the pitch lines
                 const pctX = (x / rect.width) * 100;
                 const pctY = (y / rect.height) * 100;
 
                 // update element
                 el.style.left = pctX + '%';
-                el.style.bottom = (100 - pctY) + '%';
+                el.style.top = pctY + '%';
+                el.style.bottom = 'auto';
             }
 
             function dragEnd(e) {
