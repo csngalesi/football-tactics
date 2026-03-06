@@ -283,6 +283,26 @@
             z-index: 20 !important;
         }
 
+        .player.adversary {
+            background-color: #e53935 !important;
+            color: #fff !important;
+            border-color: #fff !important;
+        }
+
+        /* --- FULLSCREEN PITCH --- */
+        .pitch-container.fullscreen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95vw;
+            height: 90vh;
+            /* slightly less than 100 to fit padding */
+            max-width: none;
+            z-index: 9999;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+
         /* --- FERRAMENTAS PRANCHETA LIVRE --- */
         .board-layout {
             display: flex;
@@ -779,6 +799,8 @@
                     <button class="tool-btn" id="tool-draw" title="Modo Rabisco" onclick="setBoardMode('draw')"><i
                             class="fa-solid fa-pen"></i></button>
                     <div style="width: 2px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
+                    <button class="tool-btn action" id="tool-fullscreen" title="Tela Cheia"
+                        onclick="toggleFullscreen()"><i class="fa-solid fa-expand"></i></button>
                     <button class="tool-btn action" title="Limpar Rabiscos e Posições" onclick="clearCanvas()"><i
                             class="fa-solid fa-eraser"></i></button>
                     <button class="tool-btn action" title="Salvar Imagem" onclick="saveDrawing()"><i
@@ -999,7 +1021,53 @@
                     benchZone.appendChild(el);
                     makeDraggable(el);
                 });
+
+                // Add Opponents
+                const advTitle = document.createElement('div');
+                advTitle.innerText = "Adversários (Adv):";
+                advTitle.style.width = "100%";
+                advTitle.style.fontSize = "0.9rem";
+                advTitle.style.fontWeight = "bold";
+                advTitle.style.marginTop = "10px";
+                advTitle.style.marginBottom = "5px";
+                advTitle.style.color = "#e53935";
+                benchZone.appendChild(advTitle);
+
+                for (let i = 1; i <= 10; i++) {
+                    const el = document.createElement('div');
+                    el.className = 'player draggable roster adversary';
+                    el.innerText = 'Adv';
+                    el.title = `Adversário ${i} (Linha)`;
+                    el.style.position = 'relative';
+                    el.style.transform = 'none';
+                    el.style.left = 'auto';
+                    el.style.bottom = 'auto';
+                    el.style.top = 'auto';
+
+                    benchZone.appendChild(el);
+                    makeDraggable(el);
+                }
             }
+        }
+
+        let isFullscreen = false;
+        function toggleFullscreen() {
+            isFullscreen = !isFullscreen;
+            const pitch = document.getElementById('drag-pitch');
+            const icon = document.querySelector('#tool-fullscreen i');
+
+            if (isFullscreen) {
+                pitch.classList.add('fullscreen');
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+            } else {
+                pitch.classList.remove('fullscreen');
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            }
+
+            // Allow layout to adapt before redrawing canvas
+            setTimeout(resizeCanvas, 350);
         }
 
         function makeDraggable(el) {
