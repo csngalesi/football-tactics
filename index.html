@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uruguai Sub-12 | Tactical Board</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600&family=Roboto:wght@300;400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a1a;
+            --surface: #2d2d2d;
+            --primary: #00a4e4;
+            /* Azul Uruguai */
+            --accent: #fbc02d;
+            /* Sol Dourado Uruguai */
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --pitch-bg: #4caf50;
+            --pitch-stripe: #43a047;
+            --line-color: rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #001f3f, var(--primary));
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 4px solid var(--accent);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .jersey-uruguay {
+            width: 80px;
+            height: auto;
+            filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
+            animation: fadeIn 0.5s ease-out;
+            margin-right: 15px;
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-style: italic;
+            color: #e0e0e0;
+            margin-top: 5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background-color: var(--surface);
+            color: var(--text-main);
+            border: 2px solid var(--primary);
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 164, 228, 0.5);
+        }
+
+        .tactic-view {
+            display: none;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tactic-view.active {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CAMPINHO DE FUTEBOL */
+        .pitch-container {
+            background: repeating-linear-gradient(0deg, var(--pitch-stripe), var(--pitch-stripe) 10%, var(--pitch-bg) 10%, var(--pitch-bg) 20%);
+            border: 2px solid var(--line-color);
+            border-radius: 8px;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            max-width: 500px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* Linhas do Campo */
+        .pitch-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .pitch-lines::before {
+            /* Meio campo horizontal */
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--line-color);
+            transform: translateY(-50%);
+        }
+
+        .pitch-lines::after {
+            /* Circulo central */
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            border: 2px solid var(--line-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .area {
+            position: absolute;
+            left: 50%;
+            width: 50%;
+            border: 2px solid var(--line-color);
+            transform: translateX(-50%);
+        }
+
+        .area.top {
+            top: 0;
+            height: 15%;
+            border-top: none;
+        }
+
+        .area.bottom {
+            bottom: 0;
+            height: 15%;
+            border-bottom: none;
+        }
+
+        .pequena-area {
+            position: absolute;
+            left: 50%;
+            width: 25%;
+            height: 40%;
+            border: 2px solid var(--line-color);
+            transform: translateX(-50%);
+        }
+
+        .area.top .pequena-area {
+            top: 0;
+            border-top: none;
+        }
+
+        .area.bottom .pequena-area {
+            bottom: 0;
+            border-bottom: none;
+        }
+
+        .meia-lua {
+            position: absolute;
+            left: 50%;
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--line-color);
+            border-radius: 50%;
+            transform: translateX(-50%);
+        }
+
+        .area.top .meia-lua {
+            bottom: -25px;
+            clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+        }
+
+        .area.bottom .meia-lua {
+            top: -25px;
+            clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+        }
+
+        /* JOGADORES */
+        .player {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary);
+            border: 3px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            color: white;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .player.draggable {
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .player.dragging {
+            cursor: grabbing;
+            transform: translate(-50%, -50%) scale(1.2);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6);
+            z-index: 100 !important;
+        }
+
+
+        /* Goleiro Oponente Generico */
+        .player.opp {
+            background-color: #d32f2f;
+        }
+
+        /* PAINEL DE INFORMAÇÕES */
+        .info-panel {
+            background-color: var(--surface);
+            padding: 2rem;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .info-panel h2 {
+            font-family: 'Oswald', sans-serif;
+            color: var(--accent);
+            margin-top: 0;
+            font-size: 2rem;
+            border-bottom: 2px solid #444;
+            padding-bottom: 10px;
+        }
+
+        .badge-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .badge-list li {
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            margin-right: 10px;
+            vertical-align: top;
+        }
+
+        .badge.pro {
+            background-color: #2e7d32;
+            color: white;
+        }
+
+        .badge.con {
+            background-color: #c62828;
+            color: white;
+        }
+
+        .badge.focus {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .desc-text {
+            color: #ddd;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 800px) {
+            .tactic-view {
+                grid-template-columns: 1fr;
+            }
+
+            .info-panel {
+                order: 2;
+            }
+
+            .pitch-container {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="header-content">
+            <svg class="jersey-uruguay" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
+                <!-- Shirt -->
+                <path d="M 25 20 C 35 15, 65 15, 75 20 L 95 35 L 85 45 L 72 35 L 72 75 L 28 75 L 28 35 L 15 45 L 5 35 Z"
+                    fill="#75aadb" stroke="#111" stroke-width="2" stroke-linejoin="round" />
+
+                <!-- Collar and Neck Details -->
+                <path d="M 38 18 Q 50 25, 62 18" fill="none" stroke="#111" stroke-width="3" />
+                <path d="M 28 20 L 38 18" fill="none" stroke="#111" stroke-width="2" />
+                <path d="M 72 20 L 62 18" fill="none" stroke="#111" stroke-width="2" />
+
+                <!-- Shoulder details -->
+                <line x1="28" y1="20" x2="15" y2="30" stroke="#111" stroke-width="2" />
+                <line x1="72" y1="20" x2="85" y2="30" stroke="#111" stroke-width="2" />
+
+                <!-- Shorts -->
+                <path d="M 28 77 L 72 77 L 78 115 L 55 115 L 50 90 L 45 115 L 22 115 Z" fill="#111" stroke="#333"
+                    stroke-width="2" stroke-linejoin="round" />
+
+                <!-- Shorts Stripes (Blue) -->
+                <line x1="31" y1="77" x2="26" y2="114" stroke="#75aadb" stroke-width="2" />
+                <line x1="69" y1="77" x2="74" y2="114" stroke="#75aadb" stroke-width="2" />
+
+                <!-- Shirt Badge (AUF Shield) -->
+                <path d="M 58 28 L 66 28 L 66 36 L 62 40 L 58 36 Z" fill="#fbc02d" stroke="#111" stroke-width="1"
+                    stroke-linejoin="round" />
+                <line x1="59" y1="31" x2="65" y2="31" stroke="#75aadb" stroke-width="1" />
+                <circle cx="62" cy="35" r="1.5" fill="#fff" />
+
+                <!-- Puma Logo (Simplified curve) on Shirt -->
+                <path d="M 37 32 Q 42 28, 45 34 L 44 35 Q 41 33, 38 35 Z" fill="#111" />
+
+                <!-- Shorts Badge (AUF Shield) -->
+                <path d="M 30 95 L 36 95 L 36 101 L 33 104 L 30 101 Z" fill="#fbc02d" stroke="#111" stroke-width="0.5"
+                    stroke-linejoin="round" />
+                <line x1="31" y1="97" x2="35" y2="97" stroke="#75aadb" stroke-width="0.5" />
+
+                <!-- Puma Logo on Shorts -->
+                <path d="M 64 97 Q 69 93, 72 99 L 71 100 Q 68 98, 65 100 Z" fill="#75aadb" />
+            </svg>
+            <div>
+                <h1>Uruguai Sub-12</h1>
+                <div class="subtitle">Análise Tática e Domínio Territorial (1 Goleiro + 9 de Linha)</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="showTactic('sys-prelecao')">Preleção</button>
+            <button class="filter-btn" onclick="showTactic('sys-3231-narrow')">3-2-3-1 (Foco Central)</button>
+            <button class="filter-btn" onclick="showTactic('sys-342')">Sistema 3-4-2</button>
+            <button class="filter-btn" onclick="showTactic('sys-432')">Sistema 4-3-2</button>
+            <button class="filter-btn" onclick="showTactic('sys-3231')">3-2-3-1 (Guardiola)</button>
+            <button class="filter-btn" onclick="showTactic('sys-drag')">Prancheta Livre</button>
+        </div>
+
+        <!-- TACTIC 0: PRELEÇÃO -->
+        <div id="sys-prelecao" class="tactic-view active" style="display: block;">
+            <div class="info-panel"
+                style="grid-column: 1 / -1; background: var(--surface); padding: 3rem; border-left: 6px solid var(--primary); border-radius: 12px;">
+                <h2
+                    style="font-family: 'Oswald', sans-serif; font-size: 2.2rem; margin-bottom: 2rem; color: var(--accent);">
+                    <i class="fa-solid fa-clipboard-user"></i> Vestiário
+                </h2>
+
+                <div style="margin-bottom: 2rem;">
+                    <label
+                        style="display: block; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; font-size: 1.2rem;">Objetivo
+                        do Jogo:</label>
+                    <textarea class="form-control"
+                        style="width: 100%; box-sizing: border-box; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--line-color); padding: 1rem; border-radius: 8px; font-size: 1.1rem; resize: vertical;"
+                        rows="3">Curtir, pensar, aprender.</textarea>
+                </div>
+
+                <div>
+                    <label
+                        style="display: block; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem; font-size: 1.2rem;">Foco
+                        Técnico para este jogo:</label>
+                    <textarea class="form-control"
+                        style="width: 100%; box-sizing: border-box; background: var(--bg-color); color: var(--text-main); border: 1px solid var(--line-color); padding: 1rem; border-radius: 8px; font-size: 1.1rem; resize: vertical;"
+                        rows="3">Domínio de bola, marcação sempre lateral.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- TACTIC 1: 3-4-2 -->
+        <div id="sys-342" class="tactic-view">
+            <div class="pitch-container">
+                <div class="pitch-lines">
+                    <div class="area top">
+                        <div class="pequena-area"></div>
+                        <div class="meia-lua"></div>
+                    </div>
+                    <div class="area bottom">
+                        <div class="pequena-area"></div>
+                        <div class="meia-lua"></div>
+                    </div>
+                </div>
+
+                <!-- Time Uruguai (Atacando pra cima) -->
+                <!-- Defesa -->
+                <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
+                <div class="player" style="bottom: 25%; left: 25%;">ZAG</div>
+                <div class="player" style="bottom: 20%; left: 50%;">LIB</div>
+                <div class="player" style="bottom: 25%; left: 75%;">ZAG</div>
+                <!-- Meio -->
+                <div class="player" style="bottom: 50%; left: 15%;">ALA</div>
+                <div class="player" style="bottom: 45%; left: 35%;">VOL</div>
+                <div class="player" style="bottom: 45%; left: 65%;">VOL</div>
+                <div class="player" style="bottom: 50%; left: 85%;">ALA</div>
+                <!-- Ataque -->
+                <div class="player" style="bottom: 75%; left: 35%;">ATA</div>
+                <div class="player" style="bottom: 75%; left: 65%;">ATA</div>
+            </div>
+
+            <div class="info-panel">
+                <h2>O Sistema 3-4-2</h2>
+                <p><strong>A Supremacia do Meio-Campo.</strong> Formação clássica de posse que estabelece uma linha de
+                    combate espessa no setor central, empurrando o jogo para a intermediária ofensiva.</p>
+
+                <ul class="badge-list">
+                    <li>
+                        <span class="badge focus">Foco Principal</span>
+                        <span class="desc-text">Vantagem territorial baseada em densidade pura. Você encurrala o
+                            adversário com 4 peças de preenchimento imediato após a perda.</span>
+                    </li>
+                    <li>
+                        <span class="badge pro">Prós (Vantagem)</span>
+                        <span class="desc-text">Gegenpressing letal. O adversário perde a bola na saída de jogo porque
+                            encontra um "muro" de triângulos na hora de armar passes.</span>
+                    </li>
+                    <li>
+                        <span class="badge con">Contras (Risco)</span>
+                        <span class="desc-text">Ocupação das laterais na defesa. Exige que os alas percorram corredores
+                            enormes na hora da recomposição, ou os zagueiros abrem para cobrir os lados.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- TACTIC 2: 4-3-2 -->
+        <div id="sys-432" class="tactic-view">
+            <div class="pitch-container">
+                <div class="pitch-lines">
+                    <div class="area top">
+                        <div class="pequena-area"></div>
+                        <div class="meia-lua"></div>
+                    </div>
+                    <div class="area bottom">
+                        <div class="pequena-area"></div>
+                        <div class="meia-lua"></div>
+                    </div>
+                </div>
+
+                <!-- Time Uruguai (Atacando pra cima) -->
+                <!-- Defesa -->
+                <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
+                <div class="player" style="bottom: 25%; left: 15%;">LAT</div>
+                <div class="player" style="bottom: 20%; left: 35%;">ZAG</div>
+                <div class="player" style="bottom: 20%; left: 65%;">ZAG</div>
+                <div class="player" style="bottom: 25%; left: 85%;">LAT</div>
+                <!-- Meio -->
+                <div class="player" style="bottom: 40%; left: 50%;">VOL</div>
+                <div class="player" style="bottom: 50%; left: 30%;">MEI</div>
+                <div class="player" style="bottom: 50%; left: 70%;">MEI</div>
+                <!-- Ataque -->
+                <div class="player" style="bottom: 75%; left: 35%;">ATA</div>
+                <div class="player" style="bottom: 75%; left: 65%;">ATA</div>
+            </div>
+
+            <div class="info-panel">
+                <h2>O Sistema 4-3-2</h2>
+                <p><strong>A Sustentação com Apoio.</strong> Formação didática, inspirada no 4-4-2 profissional. Oferece
+                    bastante blindagem no terço final.</p>
+
+                <ul class="badge-list">
+                    <li>
+                        <span class="badge focus">Foco Principal</span>
+                        <span class="desc-text">A vantagem territorial é criada através da "alavanca" dos Laterais que
+                            empurram o jogo pra frente, espremendo o campo ofensivo.</span>
+                    </li>
+                    <li>
+                        <span class="badge pro">Prós (Vantagem)</span>
+                        <span class="desc-text">Estrutura defensiva muito coesa contra equipes velozes de contra-ataque.
+                            Facilita o entendimento espacial das crianças no campo.</span>
+                    </li>
+                    <li>
+                        <span class="badge con">Contras (Risco)</span>
+                        <span class="desc-text">Se o trio de meio-campo for envolvido, o time perde a posse longe do
+                            gol, obrigando os defensores a um desgaste emocional para salvar bolas o tempo todo.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- TACTIC 3: 3-2-3-1 -->
+        <div id="sys-3231" class="tactic-view">
+            <div class="pitch-container">
+                <div class="pitch-lines">
+                    <div class="area top">
+                        <div class="pequena-area"></div>
+                        <div class="meia-lua"></div>
+                    </div>
+                    <div class="area bottom">
+                        <div class="pequena-area"></div>
+                        <div class="meia-lua"></div>
+                    </div>
+                </div>
+
+                <!-- Time Uruguai (Atacando pra cima) -->
+                <!-- Defesa -->
+                <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
+                <div class="player" style="bottom: 20%; left: 25%;">ZAG</div>
+                <div class="player" style="bottom: 15%; left: 50%;">LIB</div>
+                <div class="player" style="bottom: 20%; left: 75%;">ZAG</div>
+                <!-- Volantes -->
+                <div class="player" style="bottom: 35%; left: 35%;">VOL</div>
+                <div class="player" style="bottom: 35%; left: 65%;">VOL</div>
+                <!-- Meias Ofensivos -->
+                <div class="player" style="bottom: 60%; left: 10%;">PON</div>
+                <div class="player" style="bottom: 55%; left: 50%;">ARM</div>
+                <div class="player" style="bottom: 60%; left: 90%;">PON</div>
+                <!-- Falso 9 -->
+                <div class="player" style="bottom: 80%; left: 50%;">F-9</div>
+            </div>
+
+            <div class="info-panel">
+                <h2>O Sistema 3-2-3-1</h2>
+                <p><strong>A Vanguarda / O "Guardiola da Base".</strong> Um sistema absurdamente fluido desenhado para
+                    criar triângulos de passe em qualquer quadrante ofensivo.</p>
+
+                <ul class="badge-list">
+                    <li>
+                        <span class="badge focus">Foco Principal</span>
+                        <span class="desc-text">Empurrar a pressão inteira pra grande área deles utilizando pontas
+                            abertos, obrigando a defesa adversária a esburacar o miolo da zaga.</span>
+                    </li>
+                    <li>
+                        <span class="badge pro">Prós (Vantagem)</span>
+                        <span class="desc-text">Ofensividade letal e controle de largura. Você destrói defesas espessas
+                            atraindo-os para as laterais e abrindo um funil para o meia armador.</span>
+                    </li>
+                    <li>
+                        <span class="badge con">Contras (Risco)</span>
+                        <span class="desc-text">Exigência Absurda. Se o time perder a bola e a primeira linha de pressão
+                            não for letal, os 2 volantes ficam isolados segurando um furacão de contra-ataques
+                            sozinhos.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- TACTIC 4: 3-2-3-1 (Narrow / Foco Central) -->
+    <div id="sys-3231-narrow" class="tactic-view">
+        <div class="pitch-container">
+            <div class="pitch-lines">
+                <div class="area top">
+                    <div class="pequena-area"></div>
+                    <div class="meia-lua"></div>
+                </div>
+                <div class="area bottom">
+                    <div class="pequena-area"></div>
+                    <div class="meia-lua"></div>
+                </div>
+            </div>
+
+            <!-- Time Uruguai (Atacando pra cima) -->
+            <!-- Defesa -->
+            <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
+            <div class="player" style="bottom: 20%; left: 25%;">ZAG</div>
+            <div class="player" style="bottom: 15%; left: 50%;">LIB</div>
+            <div class="player" style="bottom: 20%; left: 75%;">ZAG</div>
+            <!-- Volantes (Base do losango) -->
+            <div class="player" style="bottom: 35%; left: 35%;">VOL</div>
+            <div class="player" style="bottom: 35%; left: 65%;">VOL</div>
+            <!-- Meias Ofensivos (Miolo) -->
+            <div class="player" style="bottom: 55%; left: 30%;">MEI</div>
+            <div class="player" style="bottom: 60%; left: 50%;">ARM</div>
+            <div class="player" style="bottom: 55%; left: 70%;">MEI</div>
+            <!-- Centroavante -->
+            <div class="player" style="bottom: 80%; left: 50%;">ATA</div>
+        </div>
+
+        <div class="info-panel">
+            <h2>O Sistema 3-2-3-1 (Foco Central / Losango)</h2>
+            <p><strong>A Asfixia pelo Meio.</strong> Uma variação fechada do 3-2-3-1 que abre mão de pontas espetados
+                para colocar 5 jogadores no raio de 20 metros do círculo central.</p>
+
+            <ul class="badge-list">
+                <li>
+                    <span class="badge focus">Foco Principal</span>
+                    <span class="desc-text">Dominância massiva do meio de campo. Você terá superioridade numérica
+                        esmagadora na faixa central, ganhando todas as "segundas bolas" e rebatidas.</span>
+                </li>
+                <li>
+                    <span class="badge pro">Prós (Vantagem)</span>
+                    <span class="desc-text">Sufoco absoluto por dentro. Permite passes mais curtos (ideal para garotos)
+                        e cria um funil defensivo inquebrável se o adversário tentar atacar pelo meio.</span>
+                </li>
+                <li>
+                    <span class="badge con">Contras (Risco)</span>
+                    <span class="desc-text">Vulnerabilidade lateral extrema. Ao abdicar dos lados do campo, times que
+                        jogam com pontas e laterais rápidos terão "avenidas" para atacar por fora do seu bloco. O
+                        balanço defensivo para fechar as laterais exige muito treino tático.</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- TACTIC 5: FREE DRAG & DROP BOARD -->
+    <div id="sys-drag" class="tactic-view">
+        <div class="pitch-container" id="drag-pitch">
+            <div class="pitch-lines">
+                <div class="area top">
+                    <div class="pequena-area"></div>
+                    <div class="meia-lua"></div>
+                </div>
+                <div class="area bottom">
+                    <div class="pequena-area"></div>
+                    <div class="meia-lua"></div>
+                </div>
+            </div>
+
+            <!-- Players will be injected here by JS -->
+            <div id="drag-players-layer"></div>
+        </div>
+
+        <div class="info-panel">
+            <h2>Prancheta Dinâmica Interativa</h2>
+            <p>Arraste os jogadores pelo campo para simular movimentações, saída de bola e marcação sob pressão.</p>
+
+            <div style="margin-top: 2rem;">
+                <label style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: var(--primary);">Formação
+                    Base:</label>
+                <select id="formation-select"
+                    style="width: 100%; padding: 0.8rem; background: var(--surface); color: white; border: 1px solid var(--primary); border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                    <option value="342">Sistema 3-4-2 (Recomendado)</option>
+                    <option value="432">Sistema 4-3-2</option>
+                    <option value="3231-narrow" selected>Sistema 3-2-3-1 (Foco Central)</option>
+                    <option value="3231">Sistema 3-2-3-1 (Guardiola)</option>
+                </select>
+            </div>
+
+            <div
+                style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--accent);">
+                <p style="font-size: 0.85rem; margin: 0; color: #ccc;"><i>Dica: Escolha a formação inicial acima. Em
+                        seguida clique e arraste as peças no campinho (touch ou mouse) para explicar deslocamentos
+                        táticos.</i></p>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+
+    <script>
+        function showTactic(id) {
+            // Remove active classes
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tactic-view').forEach(view => {
+                view.classList.remove('active');
+                if (view.id === 'sys-prelecao') view.style.display = 'none'; // special case for non-grid layout
+            });
+
+            // Add active to clicked target
+            event.target.classList.add('active');
+
+            const targetView = document.getElementById(id);
+            targetView.classList.add('active');
+
+            if (id === 'sys-prelecao') {
+                targetView.style.display = 'block';
+            }
+        }
+
+        // --- Drag and Drop Logic ---
+        const formations = {
+            '342': [
+                { id: 'gol', label: 'GOL', bottom: '5%', left: '50%' },
+                { id: 'z1', label: 'ZAG', bottom: '25%', left: '25%' },
+                { id: 'lib', label: 'LIB', bottom: '20%', left: '50%' },
+                { id: 'z2', label: 'ZAG', bottom: '25%', left: '75%' },
+                { id: 'ala1', label: 'ALA', bottom: '50%', left: '15%' },
+                { id: 'v1', label: 'VOL', bottom: '45%', left: '35%' },
+                { id: 'v2', label: 'VOL', bottom: '45%', left: '65%' },
+                { id: 'ala2', label: 'ALA', bottom: '50%', left: '85%' },
+                { id: 'a1', label: 'ATA', bottom: '75%', left: '35%' },
+                { id: 'a2', label: 'ATA', bottom: '75%', left: '65%' }
+            ],
+            '432': [
+                { id: 'gol', label: 'GOL', bottom: '5%', left: '50%' },
+                { id: 'l1', label: 'LAT', bottom: '25%', left: '15%' },
+                { id: 'z1', label: 'ZAG', bottom: '20%', left: '35%' },
+                { id: 'z2', label: 'ZAG', bottom: '20%', left: '65%' },
+                { id: 'l2', label: 'LAT', bottom: '25%', left: '85%' },
+                { id: 'v1', label: 'VOL', bottom: '40%', left: '50%' },
+                { id: 'm1', label: 'MEI', bottom: '50%', left: '30%' },
+                { id: 'm2', label: 'MEI', bottom: '50%', left: '70%' },
+                { id: 'a1', label: 'ATA', bottom: '75%', left: '35%' },
+                { id: 'a2', label: 'ATA', bottom: '75%', left: '65%' }
+            ],
+            '3231-narrow': [
+                { id: 'gol', label: 'GOL', bottom: '5%', left: '50%' },
+                { id: 'z1', label: 'ZAG', bottom: '20%', left: '25%' },
+                { id: 'lib', label: 'LIB', bottom: '15%', left: '50%' },
+                { id: 'z2', label: 'ZAG', bottom: '20%', left: '75%' },
+                { id: 'v1', label: 'VOL', bottom: '35%', left: '35%' },
+                { id: 'v2', label: 'VOL', bottom: '35%', left: '65%' },
+                { id: 'm1', label: 'MEI', bottom: '55%', left: '30%' },
+                { id: 'arm', label: 'ARM', bottom: '60%', left: '50%' },
+                { id: 'm2', label: 'MEI', bottom: '55%', left: '70%' },
+                { id: 'ata', label: 'ATA', bottom: '80%', left: '50%' }
+            ],
+            '3231': [
+                { id: 'gol', label: 'GOL', bottom: '5%', left: '50%' },
+                { id: 'z1', label: 'ZAG', bottom: '20%', left: '25%' },
+                { id: 'lib', label: 'LIB', bottom: '15%', left: '50%' },
+                { id: 'z2', label: 'ZAG', bottom: '20%', left: '75%' },
+                { id: 'v1', label: 'VOL', bottom: '35%', left: '35%' },
+                { id: 'v2', label: 'VOL', bottom: '35%', left: '65%' },
+                { id: 'p1', label: 'PON', bottom: '60%', left: '10%' },
+                { id: 'arm', label: 'ARM', bottom: '55%', left: '50%' },
+                { id: 'p2', label: 'PON', bottom: '60%', left: '90%' },
+                { id: 'f9', label: 'F-9', bottom: '80%', left: '50%' }
+            ]
+        };
+
+        const pitchNode = document.getElementById('drag-pitch');
+        const playersLayer = document.getElementById('drag-players-layer');
+        const selectNode = document.getElementById('formation-select');
+
+        function loadDraggableFormation(formationKey) {
+            playersLayer.innerHTML = ''; // clear
+            const players = formations[formationKey];
+
+            players.forEach(p => {
+                const el = document.createElement('div');
+                el.className = 'player draggable';
+                el.innerText = p.label;
+                el.style.bottom = p.bottom;
+                el.style.left = p.left;
+
+                // Keep track of z-index
+                el.style.zIndex = Math.floor(Math.random() * 10) + 10;
+
+                playersLayer.appendChild(el);
+
+                makeDraggable(el);
+            });
+        }
+
+        function makeDraggable(el) {
+            let isDragging = false;
+
+            // Touch support
+            el.addEventListener('touchstart', dragStart, { passive: false });
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('touchend', dragEnd);
+
+            // Mouse support
+            el.addEventListener('mousedown', dragStart);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', dragEnd);
+
+            function dragStart(e) {
+                if (e.target !== el) return;
+                isDragging = true;
+                el.classList.add('dragging');
+            }
+
+            function drag(e) {
+                if (!isDragging) return;
+                e.preventDefault(); // Prevent scrolling on touch
+
+                let clientX = e.clientX;
+                let clientY = e.clientY;
+
+                if (e.type === 'touchmove') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+
+                // Calculate relative position within the pitch
+                const rect = pitchNode.getBoundingClientRect();
+
+                let x = clientX - rect.left;
+                let y = clientY - rect.top;
+
+                // constrain to pitch bounds
+                x = Math.max(0, Math.min(x, rect.width));
+                y = Math.max(0, Math.min(y, rect.height));
+
+                const pctX = (x / rect.width) * 100;
+                const pctY = (y / rect.height) * 100;
+
+                // update element
+                el.style.left = pctX + '%';
+                el.style.bottom = (100 - pctY) + '%';
+            }
+
+            function dragEnd(e) {
+                if (!isDragging) return;
+                isDragging = false;
+                el.classList.remove('dragging');
+            }
+        }
+
+        // Initialize drag board
+        selectNode.addEventListener('change', (e) => loadDraggableFormation(e.target.value));
+        loadDraggableFormation(selectNode.value);
+
+    </script>
+</body>
+
+</html>
