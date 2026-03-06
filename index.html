@@ -337,6 +337,8 @@
             /* Above pitch lines, below players (when dragging), or above (when drawing) depending on JS */
             pointer-events: none;
             /* By default, let clicks pass through to players */
+            touch-action: none;
+            /* Prevent swipe scrolling when drawing */
         }
 
 
@@ -834,6 +836,11 @@
             if (id === 'sys-prelecao') {
                 targetView.style.display = 'block';
             }
+
+            if (id === 'sys-drag') {
+                // Wait for the display block layout to resolve so the canvas getClientRect works
+                setTimeout(resizeCanvas, 10);
+            }
         }
 
         // --- Drag and Drop Logic ---
@@ -1092,6 +1099,10 @@
 
         function clearCanvas() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Reset player positions
+            loadDraggableFormation(selectNode.value);
+            // Clear local storage
+            localStorage.removeItem('football_tactics_drawing');
         }
 
         function saveDrawing() {
