@@ -959,7 +959,7 @@
 
             try {
                 await fetch(`${KVDB_URL}/football_tactics_${type}`, {
-                    method: 'POST',
+                    method: 'PUT',
                     body: val
                 });
 
@@ -1114,8 +1114,8 @@
 
                 // Execute both cloud saves in parallel
                 await Promise.all([
-                    fetch(`${KVDB_URL}/football_tactics_drawing`, { method: 'POST', body: dataUrl }),
-                    fetch(`${KVDB_URL}/football_tactics_players`, { method: 'POST', body: JSON.stringify(players) })
+                    fetch(`${KVDB_URL}/football_tactics_drawing`, { method: 'PUT', body: dataUrl }),
+                    fetch(`${KVDB_URL}/football_tactics_players`, { method: 'PUT', body: JSON.stringify(players) })
                 ]);
 
                 document.body.style.cursor = '';
