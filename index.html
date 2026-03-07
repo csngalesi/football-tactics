@@ -1130,7 +1130,7 @@
         // Add the save binding globally so the HTML onclick can find it
         window.saveDrawing = saveDrawing;
 
-        window.addEventListener('DOMContentLoaded', async () => {
+        (async () => {
             try {
                 // Fetch all data from the cloud concurrently
                 const [objRes, focoRes, drawRes, playersRes] = await Promise.all([
