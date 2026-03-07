@@ -530,10 +530,6 @@
 
         <div class="filters">
             <button class="filter-btn active" onclick="showTactic('sys-prelecao')">Preleção</button>
-            <button class="filter-btn" onclick="showTactic('sys-3231-narrow')">3-2-3-1 (Foco Central)</button>
-            <button class="filter-btn" onclick="showTactic('sys-342')">Sistema 3-4-2</button>
-            <button class="filter-btn" onclick="showTactic('sys-432')">Sistema 4-3-2</button>
-            <button class="filter-btn" onclick="showTactic('sys-3231')">3-2-3-1 (Guardiola)</button>
             <button class="filter-btn" onclick="showTactic('sys-drag')">Prancheta Livre</button>
         </div>
 
@@ -570,312 +566,86 @@
             </div>
         </div>
 
-        <!-- TACTIC 1: 3-4-2 -->
-        <div id="sys-342" class="tactic-view">
-            <div class="pitch-container">
-                <div class="pitch-lines">
-                    <div class="area top">
-                        <div class="pequena-area"></div>
-                        <div class="meia-lua"></div>
+        <!-- TACTIC 5: FREE DRAG & DROP BOARD -->
+        <div id="sys-drag" class="tactic-view" style="grid-template-columns: 1fr;">
+
+            <div class="board-layout">
+                <div class="board-main">
+                    <div class="tools-sidebar">
+                        <button class="tool-btn active" id="tool-drag" title="Arrastar Jogadores"
+                            onclick="setBoardMode('drag')"><i class="fa-solid fa-hand"></i></button>
+                        <button class="tool-btn" id="tool-roster" title="Modo Elenco (Nomear posições)"
+                            onclick="toggleRosterMode()"><i class="fa-solid fa-users"></i></button>
+                        <button class="tool-btn" id="tool-draw" title="Modo Rabisco" onclick="setBoardMode('draw')"><i
+                                class="fa-solid fa-pen"></i></button>
+                        <div style="width: 2px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
+                        <button class="tool-btn action" id="tool-fullscreen" title="Tela Cheia"
+                            onclick="toggleFullscreen()"><i class="fa-solid fa-expand"></i></button>
+                        <button class="tool-btn action" title="Limpar Rabiscos e Posições" onclick="clearCanvas()"><i
+                                class="fa-solid fa-eraser"></i></button>
+                        <button class="tool-btn action" title="Salvar Imagem" onclick="saveDrawing()"><i
+                                class="fa-solid fa-floppy-disk"></i></button>
                     </div>
-                    <div class="area bottom">
-                        <div class="pequena-area"></div>
-                        <div class="meia-lua"></div>
-                    </div>
-                </div>
 
-                <!-- Time Uruguai (Atacando pra cima) -->
-                <!-- Defesa -->
-                <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
-                <div class="player" style="bottom: 25%; left: 25%;">ZAG</div>
-                <div class="player" style="bottom: 20%; left: 50%;">LIB</div>
-                <div class="player" style="bottom: 25%; left: 75%;">ZAG</div>
-                <!-- Meio -->
-                <div class="player" style="bottom: 50%; left: 15%;">ALA</div>
-                <div class="player" style="bottom: 45%; left: 35%;">VOL</div>
-                <div class="player" style="bottom: 45%; left: 65%;">VOL</div>
-                <div class="player" style="bottom: 50%; left: 85%;">ALA</div>
-                <!-- Ataque -->
-                <div class="player" style="bottom: 75%; left: 35%;">ATA</div>
-                <div class="player" style="bottom: 75%; left: 65%;">ATA</div>
-            </div>
-
-            <div class="info-panel">
-                <h2>O Sistema 3-4-2</h2>
-                <p><strong>A Supremacia do Meio-Campo.</strong> Formação clássica de posse que estabelece uma linha de
-                    combate espessa no setor central, empurrando o jogo para a intermediária ofensiva.</p>
-
-                <ul class="badge-list">
-                    <li>
-                        <span class="badge focus">Foco Principal</span>
-                        <span class="desc-text">Vantagem territorial baseada em densidade pura. Você encurrala o
-                            adversário com 4 peças de preenchimento imediato após a perda.</span>
-                    </li>
-                    <li>
-                        <span class="badge pro">Prós (Vantagem)</span>
-                        <span class="desc-text">Gegenpressing letal. O adversário perde a bola na saída de jogo porque
-                            encontra um "muro" de triângulos na hora de armar passes.</span>
-                    </li>
-                    <li>
-                        <span class="badge con">Contras (Risco)</span>
-                        <span class="desc-text">Ocupação das laterais na defesa. Exige que os alas percorram corredores
-                            enormes na hora da recomposição, ou os zagueiros abrem para cobrir os lados.</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-
-        <!-- TACTIC 2: 4-3-2 -->
-        <div id="sys-432" class="tactic-view">
-            <div class="pitch-container">
-                <div class="pitch-lines">
-                    <div class="area top">
-                        <div class="pequena-area"></div>
-                        <div class="meia-lua"></div>
-                    </div>
-                    <div class="area bottom">
-                        <div class="pequena-area"></div>
-                        <div class="meia-lua"></div>
-                    </div>
-                </div>
-
-                <!-- Time Uruguai (Atacando pra cima) -->
-                <!-- Defesa -->
-                <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
-                <div class="player" style="bottom: 25%; left: 15%;">LAT</div>
-                <div class="player" style="bottom: 20%; left: 35%;">ZAG</div>
-                <div class="player" style="bottom: 20%; left: 65%;">ZAG</div>
-                <div class="player" style="bottom: 25%; left: 85%;">LAT</div>
-                <!-- Meio -->
-                <div class="player" style="bottom: 40%; left: 50%;">VOL</div>
-                <div class="player" style="bottom: 50%; left: 30%;">MEI</div>
-                <div class="player" style="bottom: 50%; left: 70%;">MEI</div>
-                <!-- Ataque -->
-                <div class="player" style="bottom: 75%; left: 35%;">ATA</div>
-                <div class="player" style="bottom: 75%; left: 65%;">ATA</div>
-            </div>
-
-            <div class="info-panel">
-                <h2>O Sistema 4-3-2</h2>
-                <p><strong>A Sustentação com Apoio.</strong> Formação didática, inspirada no 4-4-2 profissional. Oferece
-                    bastante blindagem no terço final.</p>
-
-                <ul class="badge-list">
-                    <li>
-                        <span class="badge focus">Foco Principal</span>
-                        <span class="desc-text">A vantagem territorial é criada através da "alavanca" dos Laterais que
-                            empurram o jogo pra frente, espremendo o campo ofensivo.</span>
-                    </li>
-                    <li>
-                        <span class="badge pro">Prós (Vantagem)</span>
-                        <span class="desc-text">Estrutura defensiva muito coesa contra equipes velozes de contra-ataque.
-                            Facilita o entendimento espacial das crianças no campo.</span>
-                    </li>
-                    <li>
-                        <span class="badge con">Contras (Risco)</span>
-                        <span class="desc-text">Se o trio de meio-campo for envolvido, o time perde a posse longe do
-                            gol, obrigando os defensores a um desgaste emocional para salvar bolas o tempo todo.</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- TACTIC 3: 3-2-3-1 -->
-        <div id="sys-3231" class="tactic-view">
-            <div class="pitch-container">
-                <div class="pitch-lines">
-                    <div class="area top">
-                        <div class="pequena-area"></div>
-                        <div class="meia-lua"></div>
-                    </div>
-                    <div class="area bottom">
-                        <div class="pequena-area"></div>
-                        <div class="meia-lua"></div>
-                    </div>
-                </div>
-
-                <!-- Time Uruguai (Atacando pra cima) -->
-                <!-- Defesa -->
-                <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
-                <div class="player" style="bottom: 20%; left: 25%;">ZAG</div>
-                <div class="player" style="bottom: 15%; left: 50%;">LIB</div>
-                <div class="player" style="bottom: 20%; left: 75%;">ZAG</div>
-                <!-- Volantes -->
-                <div class="player" style="bottom: 35%; left: 35%;">VOL</div>
-                <div class="player" style="bottom: 35%; left: 65%;">VOL</div>
-                <!-- Meias Ofensivos -->
-                <div class="player" style="bottom: 60%; left: 10%;">PON</div>
-                <div class="player" style="bottom: 55%; left: 50%;">ARM</div>
-                <div class="player" style="bottom: 60%; left: 90%;">PON</div>
-                <!-- Falso 9 -->
-                <div class="player" style="bottom: 80%; left: 50%;">F-9</div>
-            </div>
-
-            <div class="info-panel">
-                <h2>O Sistema 3-2-3-1</h2>
-                <p><strong>A Vanguarda / O "Guardiola da Base".</strong> Um sistema absurdamente fluido desenhado para
-                    criar triângulos de passe em qualquer quadrante ofensivo.</p>
-
-                <ul class="badge-list">
-                    <li>
-                        <span class="badge focus">Foco Principal</span>
-                        <span class="desc-text">Empurrar a pressão inteira pra grande área deles utilizando pontas
-                            abertos, obrigando a defesa adversária a esburacar o miolo da zaga.</span>
-                    </li>
-                    <li>
-                        <span class="badge pro">Prós (Vantagem)</span>
-                        <span class="desc-text">Ofensividade letal e controle de largura. Você destrói defesas espessas
-                            atraindo-os para as laterais e abrindo um funil para o meia armador.</span>
-                    </li>
-                    <li>
-                        <span class="badge con">Contras (Risco)</span>
-                        <span class="desc-text">Exigência Absurda. Se o time perder a bola e a primeira linha de pressão
-                            não for letal, os 2 volantes ficam isolados segurando um furacão de contra-ataques
-                            sozinhos.</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-
-    </div>
-
-    <!-- TACTIC 4: 3-2-3-1 (Narrow / Foco Central) -->
-    <div id="sys-3231-narrow" class="tactic-view">
-        <div class="pitch-container">
-            <div class="pitch-lines">
-                <div class="area top">
-                    <div class="pequena-area"></div>
-                    <div class="meia-lua"></div>
-                </div>
-                <div class="area bottom">
-                    <div class="pequena-area"></div>
-                    <div class="meia-lua"></div>
-                </div>
-            </div>
-
-            <!-- Time Uruguai (Atacando pra cima) -->
-            <!-- Defesa -->
-            <div class="player" style="bottom: 5%; left: 50%;">GOL</div>
-            <div class="player" style="bottom: 20%; left: 25%;">ZAG</div>
-            <div class="player" style="bottom: 15%; left: 50%;">LIB</div>
-            <div class="player" style="bottom: 20%; left: 75%;">ZAG</div>
-            <!-- Volantes (Base do losango) -->
-            <div class="player" style="bottom: 35%; left: 35%;">VOL</div>
-            <div class="player" style="bottom: 35%; left: 65%;">VOL</div>
-            <!-- Meias Ofensivos (Miolo) -->
-            <div class="player" style="bottom: 55%; left: 30%;">MEI</div>
-            <div class="player" style="bottom: 60%; left: 50%;">ARM</div>
-            <div class="player" style="bottom: 55%; left: 70%;">MEI</div>
-            <!-- Centroavante -->
-            <div class="player" style="bottom: 80%; left: 50%;">ATA</div>
-        </div>
-
-        <div class="info-panel">
-            <h2>O Sistema 3-2-3-1 (Foco Central / Losango)</h2>
-            <p><strong>A Asfixia pelo Meio.</strong> Uma variação fechada do 3-2-3-1 que abre mão de pontas espetados
-                para colocar 5 jogadores no raio de 20 metros do círculo central.</p>
-
-            <ul class="badge-list">
-                <li>
-                    <span class="badge focus">Foco Principal</span>
-                    <span class="desc-text">Dominância massiva do meio de campo. Você terá superioridade numérica
-                        esmagadora na faixa central, ganhando todas as "segundas bolas" e rebatidas.</span>
-                </li>
-                <li>
-                    <span class="badge pro">Prós (Vantagem)</span>
-                    <span class="desc-text">Sufoco absoluto por dentro. Permite passes mais curtos (ideal para garotos)
-                        e cria um funil defensivo inquebrável se o adversário tentar atacar pelo meio.</span>
-                </li>
-                <li>
-                    <span class="badge con">Contras (Risco)</span>
-                    <span class="desc-text">Vulnerabilidade lateral extrema. Ao abdicar dos lados do campo, times que
-                        jogam com pontas e laterais rápidos terão "avenidas" para atacar por fora do seu bloco. O
-                        balanço defensivo para fechar as laterais exige muito treino tático.</span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- TACTIC 5: FREE DRAG & DROP BOARD -->
-    <div id="sys-drag" class="tactic-view" style="grid-template-columns: 1fr;">
-
-        <div class="board-layout">
-            <div class="board-main">
-                <div class="tools-sidebar">
-                    <button class="tool-btn active" id="tool-drag" title="Arrastar Jogadores"
-                        onclick="setBoardMode('drag')"><i class="fa-solid fa-hand"></i></button>
-                    <button class="tool-btn" id="tool-roster" title="Modo Elenco (Nomear posições)"
-                        onclick="toggleRosterMode()"><i class="fa-solid fa-users"></i></button>
-                    <button class="tool-btn" id="tool-draw" title="Modo Rabisco" onclick="setBoardMode('draw')"><i
-                            class="fa-solid fa-pen"></i></button>
-                    <div style="width: 2px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
-                    <button class="tool-btn action" id="tool-fullscreen" title="Tela Cheia"
-                        onclick="toggleFullscreen()"><i class="fa-solid fa-expand"></i></button>
-                    <button class="tool-btn action" title="Limpar Rabiscos e Posições" onclick="clearCanvas()"><i
-                            class="fa-solid fa-eraser"></i></button>
-                    <button class="tool-btn action" title="Salvar Imagem" onclick="saveDrawing()"><i
-                            class="fa-solid fa-floppy-disk"></i></button>
-                </div>
-
-                <div class="pitch-container" id="drag-pitch">
-                    <div class="pitch-lines">
-                        <div class="area top">
-                            <div class="pequena-area"></div>
-                            <div class="meia-lua"></div>
+                    <div class="pitch-container" id="drag-pitch">
+                        <div class="pitch-lines">
+                            <div class="area top">
+                                <div class="pequena-area"></div>
+                                <div class="meia-lua"></div>
+                            </div>
+                            <div class="area bottom">
+                                <div class="pequena-area"></div>
+                                <div class="meia-lua"></div>
+                            </div>
                         </div>
-                        <div class="area bottom">
-                            <div class="pequena-area"></div>
-                            <div class="meia-lua"></div>
+
+                        <!-- Canvas para rabiscos -->
+                        <canvas id="drawing-canvas"></canvas>
+
+                        <!-- Players will be injected here by JS -->
+                        <div id="drag-players-layer"
+                            style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 60;"></div>
+                    </div>
+                </div>
+
+                <div class="info-panel" style="min-width: 300px; flex: 1;">
+                    <h2>Prancheta Dinâmica Interativa</h2>
+                    <p>Arraste os jogadores pelo campo ou habilite o lápis para desenhar as marcações.</p>
+
+                    <div style="margin-top: 2rem;">
+                        <label
+                            style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: var(--primary);">Formação
+                            Base:</label>
+                        <select id="formation-select"
+                            style="width: 100%; padding: 0.8rem; background: var(--surface); color: white; border: 1px solid var(--primary); border-radius: 8px; font-size: 1rem; cursor: pointer;">
+                            <option value="4212" selected>Sistema 4-2-1-2</option>
+                            <option value="342">Sistema 3-4-2</option>
+                            <option value="432">Sistema 4-3-2</option>
+                            <option value="3231-narrow">Sistema 3-2-3-1 (Foco Central)</option>
+                            <option value="3231">Sistema 3-2-3-1 (Guardiola)</option>
+                        </select>
+                    </div>
+
+                    <!-- BENCH CONTAINER FOR ROSTER MODE -->
+                    <div id="bench-container"
+                        style="display: none; margin-top: 1.5rem; padding: 1rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--primary);">
+                        <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-main);">
+                            Elenco
+                            (Arraste para o campo)</h3>
+                        <div id="bench-zone"
+                            style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; min-height: 40px;">
+                            <!-- Roster players injected here by JS -->
                         </div>
                     </div>
 
-                    <!-- Canvas para rabiscos -->
-                    <canvas id="drawing-canvas"></canvas>
-
-                    <!-- Players will be injected here by JS -->
-                    <div id="drag-players-layer"
-                        style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 60;"></div>
-                </div>
-            </div>
-
-            <div class="info-panel" style="min-width: 300px; flex: 1;">
-                <h2>Prancheta Dinâmica Interativa</h2>
-                <p>Arraste os jogadores pelo campo ou habilite o lápis para desenhar as marcações.</p>
-
-                <div style="margin-top: 2rem;">
-                    <label
-                        style="display: block; font-weight: bold; margin-bottom: 0.5rem; color: var(--primary);">Formação
-                        Base:</label>
-                    <select id="formation-select"
-                        style="width: 100%; padding: 0.8rem; background: var(--surface); color: white; border: 1px solid var(--primary); border-radius: 8px; font-size: 1rem; cursor: pointer;">
-                        <option value="342">Sistema 3-4-2 (Recomendado)</option>
-                        <option value="432">Sistema 4-3-2</option>
-                        <option value="3231-narrow" selected>Sistema 3-2-3-1 (Foco Central)</option>
-                        <option value="3231">Sistema 3-2-3-1 (Guardiola)</option>
-                    </select>
-                </div>
-
-                <!-- BENCH CONTAINER FOR ROSTER MODE -->
-                <div id="bench-container"
-                    style="display: none; margin-top: 1.5rem; padding: 1rem; background: var(--bg-color); border-radius: 8px; border: 1px solid var(--primary);">
-                    <h3 style="margin-top: 0; margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-main);">Elenco
-                        (Arraste para o campo)</h3>
-                    <div id="bench-zone"
-                        style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-start; min-height: 40px;">
-                        <!-- Roster players injected here by JS -->
+                    <div
+                        style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--accent);">
+                        <p style="font-size: 0.85rem; margin: 0; color: #ccc;"><i>Dicas:<br>- Mãozinha: Arrasta
+                                jogadores.<br>- Lápis: Desenha setas/linhas.<br>- Bonecos: Modo Elenco Nominal.</i></p>
                     </div>
-                </div>
-
-                <div
-                    style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid var(--accent);">
-                    <p style="font-size: 0.85rem; margin: 0; color: #ccc;"><i>Dicas:<br>- Mãozinha: Arrasta
-                            jogadores.<br>- Lápis: Desenha setas/linhas.<br>- Bonecos: Modo Elenco Nominal.</i></p>
                 </div>
             </div>
         </div>
-    </div>
 
 
     </div>
@@ -907,6 +677,18 @@
 
         // --- Drag and Drop Logic ---
         const formations = {
+            '4212': [
+                { id: 'gol', label: 'GOL', bottom: '5%', left: '50%' },
+                { id: 'l1', label: 'LAT', bottom: '25%', left: '15%' },
+                { id: 'z1', label: 'ZAG', bottom: '20%', left: '35%' },
+                { id: 'z2', label: 'ZAG', bottom: '20%', left: '65%' },
+                { id: 'l2', label: 'LAT', bottom: '25%', left: '85%' },
+                { id: 'v1', label: 'VOL', bottom: '40%', left: '40%' },
+                { id: 'v2', label: 'VOL', bottom: '40%', left: '60%' },
+                { id: 'm1', label: 'MEI', bottom: '55%', left: '50%' },
+                { id: 'a1', label: 'ATA', bottom: '75%', left: '35%' },
+                { id: 'a2', label: 'ATA', bottom: '75%', left: '65%' }
+            ],
             '342': [
                 { id: 'gol', label: 'GOL', bottom: '5%', left: '50%' },
                 { id: 'z1', label: 'ZAG', bottom: '25%', left: '25%' },
@@ -1165,23 +947,39 @@
         selectNode.addEventListener('change', (e) => loadDraggableFormation(e.target.value));
         loadDraggableFormation(selectNode.value);
 
+        // Cloud Database Key
+        const KVDB_URL = 'https://kvdb.io/X6hQYHwF21pb3eG9oS1krv';
+
         // --- Briefing Logic ---
-        function saveBriefing(type, btn) {
+        async function saveBriefing(type, btn) {
             const val = document.getElementById(`briefing-${type}`).value;
-            localStorage.setItem(`football_tactics_${type}`, val);
 
             const oldText = btn.innerText;
-            btn.innerText = 'Salvo com sucesso!';
-            btn.style.backgroundColor = '#4caf50';
-            btn.style.borderColor = '#4caf50';
-            btn.style.color = '#fff';
+            btn.innerText = 'Salvando na nuvem...';
 
-            setTimeout(() => {
-                btn.innerText = oldText;
-                btn.style.backgroundColor = '';
-                btn.style.borderColor = '';
-                btn.style.color = '';
-            }, 2000);
+            try {
+                await fetch(`${KVDB_URL}/football_tactics_${type}`, {
+                    method: 'POST',
+                    body: val
+                });
+
+                btn.innerText = 'Salvo para Todos!';
+                btn.style.backgroundColor = '#4caf50';
+                btn.style.borderColor = '#4caf50';
+                btn.style.color = '#fff';
+
+                setTimeout(() => {
+                    btn.innerText = oldText;
+                    btn.style.backgroundColor = '';
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                }, 2000);
+            } catch (err) {
+                console.error("Failed to save briefing", err);
+                btn.innerText = 'Erro ao salvar!';
+                btn.style.backgroundColor = '#c62828';
+                setTimeout(() => btn.innerText = oldText, 2000);
+            }
         }
 
         // --- Drawing Logic ---
@@ -1292,80 +1090,107 @@
             localStorage.removeItem('football_tactics_players');
         }
 
-        function saveDrawing() {
-            // Save Canvas Map
-            const dataUrl = canvas.toDataURL();
-            localStorage.setItem('football_tactics_drawing', dataUrl);
+        async function saveDrawing() {
+            try {
+                // Change cursor to indicate saving
+                document.body.style.cursor = 'wait';
 
-            // Save Position of specific layer players
-            const players = [];
-            document.querySelectorAll('#drag-players-layer .player').forEach(el => {
-                players.push({
-                    className: el.className,
-                    innerText: el.innerText,
-                    title: el.title || '',
-                    bottom: el.style.bottom,
-                    left: el.style.left,
-                    top: el.style.top,
-                    zIndex: el.style.zIndex
+                // Save Canvas Map
+                const dataUrl = canvas.toDataURL();
+
+                // Save Position of specific layer players
+                const players = [];
+                document.querySelectorAll('#drag-players-layer .player').forEach(el => {
+                    players.push({
+                        className: el.className,
+                        innerText: el.innerText,
+                        title: el.title || '',
+                        bottom: el.style.bottom,
+                        left: el.style.left,
+                        top: el.style.top,
+                        zIndex: el.style.zIndex
+                    });
                 });
-            });
-            localStorage.setItem('football_tactics_players', JSON.stringify(players));
 
-            alert('Tática e Jogadores salvos com sucesso na Prancheta Livre!');
+                // Execute both cloud saves in parallel
+                await Promise.all([
+                    fetch(`${KVDB_URL}/football_tactics_drawing`, { method: 'POST', body: dataUrl }),
+                    fetch(`${KVDB_URL}/football_tactics_players`, { method: 'POST', body: JSON.stringify(players) })
+                ]);
+
+                document.body.style.cursor = '';
+                alert('Tática e Jogadores salvos na nuvem com sucesso!');
+            } catch (err) {
+                console.error("Failed to save tactics to cloud", err);
+                document.body.style.cursor = '';
+                alert('Erro de conexão ao tentar salvar pro servidor.');
+            }
         }
 
         // Add the save binding globally so the HTML onclick can find it
         window.saveDrawing = saveDrawing;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedObj = localStorage.getItem('football_tactics_objetivo');
-            if (savedObj) document.getElementById('briefing-objetivo').value = savedObj;
+        window.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Fetch all data from the cloud concurrently
+                const [objRes, focoRes, drawRes, playersRes] = await Promise.all([
+                    fetch(`${KVDB_URL}/football_tactics_objetivo`),
+                    fetch(`${KVDB_URL}/football_tactics_foco`),
+                    fetch(`${KVDB_URL}/football_tactics_drawing`),
+                    fetch(`${KVDB_URL}/football_tactics_players`)
+                ]);
 
-            const savedFoco = localStorage.getItem('football_tactics_foco');
-            if (savedFoco) document.getElementById('briefing-foco').value = savedFoco;
-
-            // Restore Drawing
-            const savedDrawing = localStorage.getItem('football_tactics_drawing');
-            if (savedDrawing) {
-                const img = new Image();
-                img.onload = () => {
-                    setTimeout(() => {
-                        ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
-                    }, 150);
-                };
-                img.src = savedDrawing;
-            }
-
-            // Restore Player Positions (if they exist) over the default layout
-            const savedPlayersJson = localStorage.getItem('football_tactics_players');
-            if (savedPlayersJson) {
-                try {
-                    const savedPlayers = JSON.parse(savedPlayersJson);
-                    const playersLayer = document.getElementById('drag-players-layer');
-                    playersLayer.innerHTML = ''; // strip default
-
-                    savedPlayers.forEach(pData => {
-                        const el = document.createElement('div');
-                        el.className = pData.className;
-                        el.innerText = pData.innerText;
-                        el.title = pData.title;
-                        el.style.bottom = pData.bottom;
-                        el.style.left = pData.left;
-                        el.style.top = pData.top;
-                        el.style.zIndex = pData.zIndex;
-                        el.style.position = 'absolute';
-                        el.style.transform = 'translate(-50%, -50%)';
-
-                        playersLayer.appendChild(el);
-                        // We must rebind events natively using makeDraggable
-                        if (typeof makeDraggable === 'function') {
-                            makeDraggable(el);
-                        }
-                    });
-                } catch (e) {
-                    console.error('Failed to restore tactical player states:', e);
+                if (objRes.ok) {
+                    const txt = await objRes.text();
+                    if (txt) document.getElementById('briefing-objetivo').value = txt;
                 }
+
+                if (focoRes.ok) {
+                    const txt = await focoRes.text();
+                    if (txt) document.getElementById('briefing-foco').value = txt;
+                }
+
+                if (drawRes.ok) {
+                    const savedDrawing = await drawRes.text();
+                    if (savedDrawing && savedDrawing.startsWith('data:image')) {
+                        const img = new Image();
+                        img.onload = () => {
+                            setTimeout(() => {
+                                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+                            }, 150);
+                        };
+                        img.src = savedDrawing;
+                    }
+                }
+
+                if (playersRes.ok) {
+                    const savedPlayersJson = await playersRes.text();
+                    if (savedPlayersJson && savedPlayersJson.startsWith('[')) {
+                        const savedPlayers = JSON.parse(savedPlayersJson);
+                        const playersLayer = document.getElementById('drag-players-layer');
+                        playersLayer.innerHTML = ''; // strip default
+
+                        savedPlayers.forEach(pData => {
+                            const el = document.createElement('div');
+                            el.className = pData.className;
+                            el.innerText = pData.innerText;
+                            el.title = pData.title;
+                            el.style.bottom = pData.bottom;
+                            el.style.left = pData.left;
+                            el.style.top = pData.top;
+                            el.style.zIndex = pData.zIndex;
+                            el.style.position = 'absolute';
+                            el.style.transform = 'translate(-50%, -50%)';
+
+                            playersLayer.appendChild(el);
+                            if (typeof makeDraggable === 'function') {
+                                makeDraggable(el);
+                            }
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to restore tactical states from cloud:', err);
             }
         });
 
