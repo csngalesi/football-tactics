@@ -947,8 +947,19 @@
         selectNode.addEventListener('change', (e) => loadDraggableFormation(e.target.value));
         loadDraggableFormation(selectNode.value);
 
-        // Cloud Database Key
-        const KVDB_URL = 'https://kvdb.io/X6hQYHwF21pb3eG9oS1krv';
+        // Cloud Database (JSONBin.io)
+        const JSONBIN_ID  = '69aba9d743b1c97be9bc7da4';
+        const JSONBIN_KEY = '$2a$10$/PgHE8CgZOgeMYtMQVpqSejFGDS1.mIM10379blUzwY/pvAdj0C.G';
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_ID}`;
+        let _cloudState = { objetivo: '', foco: '', drawing: '', players: '[]' };
+
+        async function _cloudSave() {
+            return fetch(JSONBIN_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY },
+                body: JSON.stringify(_cloudState)
+            });
+        }
 
         // --- Briefing Logic ---
         async function saveBriefing(type, btn) {
@@ -958,10 +969,8 @@
             btn.innerText = 'Salvando na nuvem...';
 
             try {
-                await fetch(`${KVDB_URL}/football_tactics_${type}`, {
-                    method: 'PUT',
-                    body: val
-                });
+                _cloudState[type] = val;
+                await _cloudSave();
 
                 btn.innerText = 'Salvo para Todos!';
                 btn.style.backgroundColor = '#4caf50';
@@ -1112,11 +1121,10 @@
                     });
                 });
 
-                // Execute both cloud saves in parallel
-                await Promise.all([
-                    fetch(`${KVDB_URL}/football_tactics_drawing`, { method: 'PUT', body: dataUrl }),
-                    fetch(`${KVDB_URL}/football_tactics_players`, { method: 'PUT', body: JSON.stringify(players) })
-                ]);
+                // Save to cloud
+                _cloudState.drawing = dataUrl;
+                _cloudState.players = JSON.stringify(players);
+                await _cloudSave();
 
                 document.body.style.cursor = '';
                 alert('Tática e Jogadores salvos na nuvem com sucesso!');
@@ -1132,62 +1140,48 @@
 
         (async () => {
             try {
-                // Fetch all data from the cloud concurrently
-                const [objRes, focoRes, drawRes, playersRes] = await Promise.all([
-                    fetch(`${KVDB_URL}/football_tactics_objetivo`),
-                    fetch(`${KVDB_URL}/football_tactics_foco`),
-                    fetch(`${KVDB_URL}/football_tactics_drawing`),
-                    fetch(`${KVDB_URL}/football_tactics_players`)
-                ]);
+                const res = await fetch(`${JSONBIN_URL}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
+                });
+                if (!res.ok) return;
+                const data = (await res.json()).record;
+                _cloudState = { ..._cloudState, ...data };
 
-                if (objRes.ok) {
-                    const txt = await objRes.text();
-                    if (txt) document.getElementById('briefing-objetivo').value = txt;
+                if (data.objetivo) document.getElementById('briefing-objetivo').value = data.objetivo;
+                if (data.foco) document.getElementById('briefing-foco').value = data.foco;
+
+                if (data.drawing && data.drawing.startsWith('data:image')) {
+                    const img = new Image();
+                    img.onload = () => {
+                        setTimeout(() => {
+                            ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+                        }, 150);
+                    };
+                    img.src = data.drawing;
                 }
 
-                if (focoRes.ok) {
-                    const txt = await focoRes.text();
-                    if (txt) document.getElementById('briefing-foco').value = txt;
-                }
+                if (data.players && data.players.startsWith('[')) {
+                    const savedPlayers = JSON.parse(data.players);
+                    const playersLayer = document.getElementById('drag-players-layer');
+                    playersLayer.innerHTML = '';
 
-                if (drawRes.ok) {
-                    const savedDrawing = await drawRes.text();
-                    if (savedDrawing && savedDrawing.startsWith('data:image')) {
-                        const img = new Image();
-                        img.onload = () => {
-                            setTimeout(() => {
-                                ctx.drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
-                            }, 150);
-                        };
-                        img.src = savedDrawing;
-                    }
-                }
+                    savedPlayers.forEach(pData => {
+                        const el = document.createElement('div');
+                        el.className = pData.className;
+                        el.innerText = pData.innerText;
+                        el.title = pData.title;
+                        el.style.bottom = pData.bottom;
+                        el.style.left = pData.left;
+                        el.style.top = pData.top;
+                        el.style.zIndex = pData.zIndex;
+                        el.style.position = 'absolute';
+                        el.style.transform = 'translate(-50%, -50%)';
 
-                if (playersRes.ok) {
-                    const savedPlayersJson = await playersRes.text();
-                    if (savedPlayersJson && savedPlayersJson.startsWith('[')) {
-                        const savedPlayers = JSON.parse(savedPlayersJson);
-                        const playersLayer = document.getElementById('drag-players-layer');
-                        playersLayer.innerHTML = ''; // strip default
-
-                        savedPlayers.forEach(pData => {
-                            const el = document.createElement('div');
-                            el.className = pData.className;
-                            el.innerText = pData.innerText;
-                            el.title = pData.title;
-                            el.style.bottom = pData.bottom;
-                            el.style.left = pData.left;
-                            el.style.top = pData.top;
-                            el.style.zIndex = pData.zIndex;
-                            el.style.position = 'absolute';
-                            el.style.transform = 'translate(-50%, -50%)';
-
-                            playersLayer.appendChild(el);
-                            if (typeof makeDraggable === 'function') {
-                                makeDraggable(el);
-                            }
-                        });
-                    }
+                        playersLayer.appendChild(el);
+                        if (typeof makeDraggable === 'function') {
+                            makeDraggable(el);
+                        }
+                    });
                 }
             } catch (err) {
                 console.error('Failed to restore tactical states from cloud:', err);
