@@ -392,6 +392,23 @@
             }
         }
 
+        /* Custom Scrollbar for the horizontal wrapper */
+        .board-scroll-wrapper::-webkit-scrollbar {
+            height: 12px;
+        }
+        .board-scroll-wrapper::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+        .board-scroll-wrapper::-webkit-scrollbar-thumb {
+            background-color: var(--primary);
+            border-radius: 8px;
+            border: 3px solid #f4f6f8; /* Creates a clean padding effect inside the track */
+        }
+        .board-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+            background-color: #3949ab;
+        }
+
     </style>
 </head>
 
