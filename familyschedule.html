@@ -377,9 +377,19 @@
             left: 50%;
             transform: translateX(-50%);
             width: auto;
-            z-index: 10000;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             background: rgba(255, 255, 255, 0.95);
+        }
+
+        /* Mobile Read-Only Mode */
+        @media (max-width: 768px) {
+            .tools-sidebar, .info-panel {
+                display: none !important;
+            }
+            .board-main {
+                width: 100% !important;
+                margin: 0 !important;
+            }
         }
 
     </style>
@@ -568,7 +578,7 @@
             const titleNode = el.querySelector('.card-title');
 
             el.addEventListener('dblclick', function(e) {
-                if(boardMode !== 'drag') return;
+                if(boardMode !== 'drag' || window.innerWidth <= 768) return; // Prevent edit on mobile read-only mode
                 e.stopPropagation();
                 titleNode.setAttribute('contenteditable', 'true');
                 titleNode.focus();
@@ -630,7 +640,7 @@
             document.addEventListener('mouseup', dragEnd);
 
             function dragStart(e) {
-                if (boardMode === 'draw') return;
+                if (boardMode === 'draw' || window.innerWidth <= 768) return; // Read-only on mobile screens
                 
                 // Block drag if clicking inside editable title
                 let target = e.target;
