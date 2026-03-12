@@ -113,7 +113,7 @@
             border-radius: 8px;
             position: relative;
             width: 100%;
-            min-width: 2400px; /* Force minimum width to trigger horizontal scroll showing ~2.5 days on desktop viewport */
+            min-width: 200vw; /* 200% of viewport width guarantees exactly 2.5 days (out of 5) fit on screen at once */
             height: 900px; /* Taller to fit more blocks */
             margin: 0 auto;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -831,7 +831,7 @@
             if(confirm('Tem certeza que deseja apagar toda a agenda e rabiscos?')) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 eventsLayer.innerHTML = '';
-                localStorage.removeItem('family_schedule_v6');
+                localStorage.removeItem('family_schedule_v7');
             }
         }
 
@@ -850,13 +850,13 @@
             });
 
             const state = { drawing: dataUrl, events: JSON.stringify(events) };
-            localStorage.setItem('family_schedule_v6', JSON.stringify(state));
+            localStorage.setItem('family_schedule_v7', JSON.stringify(state));
             alert('Agenda salva com sucesso no navegador!');
         }
 
         // Restore State
         (function restoreState() {
-            const saved = localStorage.getItem('family_schedule_v6');
+            const saved = localStorage.getItem('family_schedule_v7');
             if(saved) {
                 try {
                     const data = JSON.parse(saved);
