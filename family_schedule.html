@@ -113,6 +113,7 @@
             border-radius: 8px;
             position: relative;
             width: 100%;
+            min-width: 1000px; /* Force minimum width to trigger horizontal scroll on mobile */
             height: 900px; /* Taller to fit more blocks */
             margin: 0 auto;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
@@ -408,8 +409,9 @@
                             class="fa-solid fa-floppy-disk"></i></button>
                 </div>
 
-                <div class="schedule-container" id="main-board">
-                    <div class="schedule-header">
+                <div class="board-scroll-wrapper" style="width: 100%; overflow-x: auto; padding-bottom: 10px;">
+                    <div class="schedule-container" id="main-board">
+                        <div class="schedule-header">
                         <!-- MON -->
                         <div class="day-header">
                             <div class="day-title">Segunda</div>
@@ -467,6 +469,7 @@
                     <div id="events-layer"
                         style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; z-index: 60; pointer-events: none;">
                         <!-- pointer-events:none on layer, but active on children so grid is clickable under them -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -818,7 +821,7 @@
             if(confirm('Tem certeza que deseja apagar toda a agenda e rabiscos?')) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 eventsLayer.innerHTML = '';
-                localStorage.removeItem('family_schedule_v4');
+                localStorage.removeItem('family_schedule_v5');
             }
         }
 
@@ -837,13 +840,13 @@
             });
 
             const state = { drawing: dataUrl, events: JSON.stringify(events) };
-            localStorage.setItem('family_schedule_v4', JSON.stringify(state));
+            localStorage.setItem('family_schedule_v5', JSON.stringify(state));
             alert('Agenda salva com sucesso no navegador!');
         }
 
         // Restore State
         (function restoreState() {
-            const saved = localStorage.getItem('family_schedule_v4');
+            const saved = localStorage.getItem('family_schedule_v5');
             if(saved) {
                 try {
                     const data = JSON.parse(saved);
